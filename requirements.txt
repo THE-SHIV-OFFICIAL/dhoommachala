@@ -22,7 +22,8 @@ requests
 SafoneAPI
 spotipy
 tgcrypto>=1.2.5
-ftmgram>=3.5.8
+ftmgram
+kurigram
 telegraph
 unidecode
 youtube-search
