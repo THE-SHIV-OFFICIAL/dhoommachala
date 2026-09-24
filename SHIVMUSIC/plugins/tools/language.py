@@ -1,6 +1,5 @@
-from pykeyboard import InlineKeyboard
 from ftmgram import filters
-from ftmgram.types import InlineKeyboardButton, Message
+from ftmgram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from SHIVMUSIC import app
 from SHIVMUSIC.utils.database import get_lang, set_lang
@@ -10,26 +9,35 @@ from strings import get_string, languages_present
 
 
 def lanuages_keyboard(_):
-    keyboard = InlineKeyboard(row_width=2)
-    keyboard.add(
-        *[
-            (
-                InlineKeyboardButton(
-                    text=languages_present[i],
-                    callback_data=f"languages:{i}",
-                )
-            )
-            for i in languages_present
+    # Sabhi language buttons ko ek list me generate kro
+    lang_buttons = [
+        InlineKeyboardButton(
+            text=languages_present[i],
+            callback_data=f"languages:{i}",
+        )
+        for i in languages_present
+    ]
+    
+    # Buttons ko 2-2 ke chunks (row_width=2) me split kro
+    keyboard = []
+    for i in range(0, len(lang_buttons), 2):
+        keyboard.append(lang_buttons[i : i + 2])
+        
+    # Niche ka Back aur Close button add kro
+    keyboard.append(
+        [
+            InlineKeyboardButton(
+                text=_["BACK_BUTTON"],
+                callback_data="settingsback_helper",
+            ),
+            InlineKeyboardButton(
+                text=_["CLOSE_BUTTON"], 
+                callback_data="close"
+            ),
         ]
     )
-    keyboard.row(
-        InlineKeyboardButton(
-            text=_["BACK_BUTTON"],
-            callback_data=f"settingsback_helper",
-        ),
-        InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data=f"close"),
-    )
-    return keyboard
+    
+    return InlineKeyboardMarkup(keyboard)
 
 
 @app.on_message(filters.command(["lang", "setlang", "language"]) & ~BANNED_USERS)
